@@ -13,7 +13,8 @@ RUN apt-get update && \
     unzip \
     zsh \
     fonts-powerline \
-    locales && \
+    locales \
+    neovim && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* Update and install basic utilities including zsh
 
