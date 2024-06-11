@@ -4,7 +4,7 @@ FROM ubuntu:latest
 # Set the maintainer label (optional)
 LABEL maintainer="your-email@example.com"
 
-## Update and install basic utilities including zsh
+# Update and install basic utilities including zsh
 RUN apt-get update && \
     apt-get install -y \
     curl \
@@ -15,9 +15,15 @@ RUN apt-get update && \
     fonts-powerline \
     locales \
     gcc \
-    neovim && \
+    neovim \
+    cmake \
+    libssl-dev \
+    pkg-config \
+    libclang-dev \
+    libpq-dev \
+    build-essential && \
     apt-get clean && \
-    rm -rf /var/lib/apt/lists/* Update and install basic utilities including zsh
+    rm -rf /var/lib/apt/lists/*
 
 # Generate locale
 ENV LANG=en_US.UTF-8
@@ -40,6 +46,25 @@ RUN git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 
 # Change the default shell to zsh
 RUN chsh -s $(which zsh)
+
+# Install Rust and Cargo
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+
+# Add Rust and Cargo to the PATH
+ENV PATH="/root/.cargo/bin:${PATH}"
+
+# Install Sui from MystenLabs
+RUN cargo install --locked --git https://github.com/MystenLabs/sui.git --branch testnet sui
+
+# Update Rust to stable
+RUN rustup update stable
+
+# Install move-analyzer language server
+RUN cargo install --git https://github.com/MystenLabs/sui move-analyzer
+
+# Create the directory for move-analyzer binary and copy it there
+RUN mkdir -p /root/.sui/bin && \
+    cp /root/.cargo/bin/move-analyzer /root/.sui/bin/move-analyzer
 
 # Set the default command to run zsh
 CMD ["zsh"]

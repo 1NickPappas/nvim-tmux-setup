@@ -19,9 +19,20 @@ return {
       local lspconfig = require('lspconfig')
       lspconfig.lua_ls.setup({})
 
+      lspconfig['move_analyzer'].setup{
+        cmd = { "/root/.cargo/bin/move-analyzer" },  -- Use the path found earlier
+        filetypes = { "move" },  -- Adjust to the correct filetype if necessary
+        root_dir = function(fname)
+          return lspconfig.util.find_git_ancestor(fname) or vim.loop.os_homedir()
+        end,
+        settings = {
+          -- Custom settings for the LSP server, if any
+        },
+      }
+
        -- See `:help vim.lsp.*` for documentation on any of the below functions
- -- vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, {})
- -- vim.keymap.set('n', 'gd', vim.lsp.buf.definition, {})
+ vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, {})
+ vim.keymap.set('n', 'gd', vim.lsp.buf.definition, {})
  vim.keymap.set('n', 'K', vim.lsp.buf.hover, {})
  -- vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, {})
  -- vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, {})
