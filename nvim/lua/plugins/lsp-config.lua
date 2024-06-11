@@ -15,11 +15,26 @@ return {
   },
   {
     "neovim/nvim-lspconfig",
+    lazy = false,
     config = function()
+
       local lspconfig = require('lspconfig')
-      lspconfig.lua_ls.setup({})
+
+      require'cmp'.setup {
+       sources = {
+        { name = 'nvim_lsp' }
+       }
+      }
+      -- The nvim-cmp almost supports LSP's capabilities so You should advertise it to LSP servers..
+      local capabilities = require('cmp_nvim_lsp').default_capabilities()
+
+
+      lspconfig.lua_ls.setup({
+        capabilities = capabilities,
+      })
 
       lspconfig['move_analyzer'].setup{
+        capabilities = capabilities,
         cmd = { "/root/.cargo/bin/move-analyzer" },  -- Use the path found earlier
         filetypes = { "move" },  -- Adjust to the correct filetype if necessary
         root_dir = function(fname)
